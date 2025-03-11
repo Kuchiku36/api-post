@@ -5,15 +5,17 @@ namespace App\Http\Controllers;
 
 use App\Models\Post;
 use Illuminate\Http\Request;
-use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Routing\Controllers\Middleware;
+use Illuminate\Routing\Controllers\HasMiddleware;
 
 class PostController extends Controller implements HasMiddleware
 {
+    
     public static function middleware()
     {
         return[
-            new Middleware('auth:sanctum', except: ['index', 'show'])
+            new Middleware('auth:sanctum', except: ['index', 'show'])// ont permet au utilisateur d'avoir accès a ses page sans être connecter 
         ];
     }
     /**
@@ -32,11 +34,11 @@ class PostController extends Controller implements HasMiddleware
     {
         //
         $rqPost = $request->validate([
-            'title'=>'required|max:255',
+            'title'=>'required',
             'description'=>'required',
         ]);
 
-        $post = Post::create($rqPost);
+        $post = $request->user()->posts()->create($rqPost) ;
 
         return $post;
     }
@@ -56,6 +58,8 @@ class PostController extends Controller implements HasMiddleware
     public function update(Request $request, Post $post)
     {
         //
+        Gate::autorize('modify', $post);
+
         $rqPost = $request->validate([
             'title'=>'required|max:255',
             'description'=>'required',
@@ -72,6 +76,9 @@ class PostController extends Controller implements HasMiddleware
     public function destroy(Post $post)
     {
         //
+
+        Gate::autorize('modify', $post);
+        
         $post->delete();
         return ['delete'=>true];
     }

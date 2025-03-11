@@ -26,7 +26,7 @@ class AuthApiController extends Controller
             'user' => $user,
             'token' => $token->plainTextToken,
         ];
-    }
+    }// end register
 
     public function login(Request $request)
 
@@ -49,12 +49,12 @@ class AuthApiController extends Controller
             'user' => $user,
             'token' => $token->plainTextToken,
         ];
-    }
+    }// end login
 
     public function logout(Request $request)
 
     {
         $request->user()->tokens()->delete();
         return ['logout' => true];
-    }
+    }// end logout
 }
